@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+const ObjectId = Schema.Types.ObjectId;
 
 const eventSchema = new Schema({
-    clubId: ObjectId,
+    clubId: { type: ObjectId, ref: 'Club' },
     dateBegin: { type: Date },
     dateEnd: { type: Date },
     title: { type: String },

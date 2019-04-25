@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+const ObjectId = Schema.Types.ObjectId;
 
 const userSchema = new Schema({
     isAdmin: { type: Boolean, default: false },
@@ -15,7 +15,7 @@ const userSchema = new Schema({
     password: { type: String, required: true },
     results: [String | Number],
     level: [String | Number],
-    clubId: [ObjectId]
+    clubId: [{ type: ObjectId, ref: 'Club' }]
 
 });
 

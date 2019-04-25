@@ -1,17 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const isAuthenticate = require('../middleware/isAuthenticate');
+const isAdmin = require('../middleware/isAdmin');
 
-router.post('/login', (req, res) => {
-
-})
-
-router.get('/', (req, res) => {
-    res.send({ message: "OK" });
-});
-
-router.post('/', (req, res) => {
-    const user = new User({
+createUser = (req) => {
+    return new User({
         isAdmin: req.body.isAdmin,
         isAdherent: req.body.isAdherent,
         isActive: req.body.isActive,
@@ -26,23 +20,70 @@ router.post('/', (req, res) => {
         level: req.body.level,
         clubId: req.body.clubId
     });
-    user.save( (err, doc) => {
-        if (err)  return res.json(err);
-        console.log('user save ', doc);
+}
+
+router.get('/', isAuthenticate, (req, res) => {
+    User.find({ clubId: { $in: req.decoded.clubId } }, { password: 0 }, (err, doc) => {
+        if (err) return res.json(err);
+        res.json({
+            message: "users trouvés",
+            users: doc
+        });
+    });
+});
+
+router.post('/', [isAuthenticate, isAdmin], (req, res) => {
+    const user = createUser(req);
+    user.save((err, doc) => {
+        if (err) return res.json(err);
         res.json({
             message: "user save",
             status: 200
         });
     })
-
 });
 
-router.get('/:id', (req, res) => {
-
+router.post('/many', [isAuthenticate, isAdmin], (req, res) => {
+    User.insertMany(req.body,  (err, doc) =>{
+        if (err) return res.json(err);
+        res.json({
+            message: 'users saved',
+            status: 200,
+            usersSaved: doc
+        });
+    });
 });
 
-router.put('/:id', (req, res) => {
+router.get('/:id', isAuthenticate, (req, res) => {
+    const id = req.params.id;
+    User.findById(id, { password: 0 }, (err, doc) => {
+        if (err) return res.json(err);
+        res.json({
+            message: "user trouvé par id",
+            status: 200
+        });
+    });
+});
 
+router.put('/:id', isAuthenticate, (req, res) => {
+    const id = req.params.id;
+    if (id === req.decoded.userId) {
+        const user = createUser(req);
+        User.findByIdAndUpdate(id, user, (err, doc) => {
+            if (err) return res.json(err);
+            res.json({
+                message: "user modifié",
+                user: doc,
+                status: 200
+            });
+        });
+    }
+    if (id !== req.decoded.userId) {
+        res.json({
+            message: "Pas les droits de modification pour cet utilisateur",
+            status: 401
+        })
+    }
 });
 
 module.exports = router;

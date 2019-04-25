@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+const ObjectId = Schema.Types.ObjectId;
 
 const clubSchema = new Schema({
     clubName: { type: String, required: true },
-    members: [ObjectId]
+    members: [{ type: ObjectId, ref: 'User' }]
 });
 
 module.exports = mongoose.model('Club', clubSchema);
