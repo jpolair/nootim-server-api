@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const stringSecret = 'aqwxszedcvfrtkjhgfù2';
+const STRING_SECRET = process.env.STRING_SECRET || 'aqwxszedcvfrtkjhgfù2';
 
 module.exports = function (req, res, next) {
   const bearerToken = req.headers['authorization'] || null;
@@ -7,7 +7,7 @@ module.exports = function (req, res, next) {
   if (!token) return res.json({ status: 401, message: 'Pas de token d\'accès'});
   if (token) {
     try {
-      const decoded = jwt.verify(token, stringSecret);
+      const decoded = jwt.verify(token, STRING_SECRET);
       req.decoded = decoded;
       next();
     }

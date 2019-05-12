@@ -35,4 +35,19 @@ router.get('/', isAuthenticate, (req, res) => {
     });
 });
 
+router.get('/messages/:id', isAuthenticate, (req, res) => {
+    messageId = req.params.id;
+    Comment.find({ messageId: messageId})
+    .populate('ownerMessage', 'firstname lastname')
+    .populate('ownerComment', 'firstname lastname')
+    .exec( (err, doc) => {
+        if (err) return res.json({ err });
+        res.json({
+            status: 200,
+            message: 'Liste des comments trouvée',
+            commentsFetched: doc
+        });
+    });
+
+});
 module.exports = router;

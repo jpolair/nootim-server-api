@@ -24,15 +24,31 @@ router.post('/', (req, res) => {
     });
 });
 
+// router.get('/', isAuthenticate, (req, res) => {
+//     Message.find({ clubId: { $in: req.decoded.clubId } }, function (err, doc) {
+//         if (err) return res.json({ err });
+//         res.json({
+//             status: 200,
+//             message: 'Liste des messages trouvée',
+//             messagesFetched: doc
+//         });
+//     });
+// });
+
 router.get('/', isAuthenticate, (req, res) => {
-    Message.find({ clubId: { $in: req.decoded.clubId } }, function (err, doc) {
-        if (err) return res.json({ err });
+    Message.find({ clubId: { $in: req.decoded.clubId } })
+    .populate('owner','firstname lastname')
+    .exec()
+    .then( (doc) => {
         res.json({
             status: 200,
             message: 'Liste des messages trouvée',
             messagesFetched: doc
         });
-    });
+    })
+    .catch( (err) => {
+        res.json({err})
+    })
 });
 
 router.get('/my', isAuthenticate, (req, res) => {
@@ -42,6 +58,7 @@ router.get('/my', isAuthenticate, (req, res) => {
         .exec((err, doc) => {
             if (err) return res.json(err);
             res.json({
+                status: 200,
                 message: "messages du user trouvés",
                 messagesFetched: doc
             });

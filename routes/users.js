@@ -32,6 +32,17 @@ router.get('/', isAuthenticate, (req, res) => {
     });
 });
 
+router.get('/me', isAuthenticate, (req, res) => {
+    const id = req.decoded.userId;
+    User.findById(id, { password: 0 }, (err, doc) => {
+        if (err) return res.json(err);
+        res.json({
+            message: "user (me) trouvé",
+            status: 200,
+            userFetched: doc
+        });
+    });
+})
 router.post('/', [isAuthenticate, isAdmin], (req, res) => {
     const user = createUser(req);
     user.save((err, doc) => {
@@ -60,7 +71,8 @@ router.get('/:id', isAuthenticate, (req, res) => {
         if (err) return res.json(err);
         res.json({
             message: "user trouvé par id",
-            status: 200
+            status: 200,
+            userFetched: doc
         });
     });
 });

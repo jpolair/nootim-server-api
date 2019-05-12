@@ -29,7 +29,8 @@ router.put('/:id', [isAuthenticate, isAdmin], (req, res) => {
         if (err) return res.json(err);
         res.json({
             message: "club modifié avec succès",
-            clubUpdated: doc
+            clubUpdated: doc,
+            status: 200
         });
     });
 });
@@ -46,7 +47,7 @@ router.get('/:id', isAuthenticate, (req, res) => {
     const id = req.params.id;
     Club.findById({ _id: id }, (err, doc) => {
         if (err) return res.json(err);
-        res.json({ message: "OK", clubFetched: doc });
+        res.json({ message: "OK", clubFetched: doc, status: 200 });
     })
 });
 
