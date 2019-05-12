@@ -10,11 +10,12 @@ router.post('/', [isAuthenticate, isAdmin], (req, res) => {
         members: req.body.members
     });
     club.save((err, doc) => {
-        if (err) return res.json(err);
+        if (err) return res.json({ error: err });
         res.json({
             message: "club save",
             status: 200,
-            clubSaved: doc
+            data: doc,
+            error: null
         });
     })
 });
@@ -26,11 +27,12 @@ router.put('/:id', [isAuthenticate, isAdmin], (req, res) => {
         members: req.body.members
     });
     Club.findByIdAndUpdate(id, club, (err, doc) => {
-        if (err) return res.json(err);
+        if (err) return res.json({ error: err });
         res.json({
             message: "club modifié avec succès",
-            clubUpdated: doc,
-            status: 200
+            data: doc,
+            status: 200,
+            error: null
         });
     });
 });
@@ -46,8 +48,12 @@ router.get('/', [isAuthenticate, isAdmin], (req, res) => {
 router.get('/:id', isAuthenticate, (req, res) => {
     const id = req.params.id;
     Club.findById({ _id: id }, (err, doc) => {
-        if (err) return res.json(err);
-        res.json({ message: "OK", clubFetched: doc, status: 200 });
+        if (err) return res.json({ error: err });
+        res.json({ 
+            message: "OK", 
+            data: doc, 
+            status: 200,
+            error: null });
     })
 });
 

@@ -24,10 +24,12 @@ createUser = (req) => {
 
 router.get('/', isAuthenticate, (req, res) => {
     User.find({ clubId: { $in: req.decoded.clubId } }, { password: 0 }, (err, doc) => {
-        if (err) return res.json(err);
+        if (err) return res.json({ error: err });
         res.json({
             message: "users trouvés",
-            users: doc
+            data: doc,
+            status: 200,
+            error: null
         });
     });
 });
@@ -35,32 +37,36 @@ router.get('/', isAuthenticate, (req, res) => {
 router.get('/me', isAuthenticate, (req, res) => {
     const id = req.decoded.userId;
     User.findById(id, { password: 0 }, (err, doc) => {
-        if (err) return res.json(err);
+        if (err) return res.json({ error: err });
         res.json({
             message: "user (me) trouvé",
             status: 200,
-            userFetched: doc
+            data: doc,
+            error: null
         });
     });
 })
 router.post('/', [isAuthenticate, isAdmin], (req, res) => {
     const user = createUser(req);
     user.save((err, doc) => {
-        if (err) return res.json(err);
+        if (err) return res.json({ error:err });
         res.json({
             message: "user save",
-            status: 200
+            status: 200,
+            data: doc,
+            error: null
         });
     })
 });
 
 router.post('/many', [isAuthenticate, isAdmin], (req, res) => {
     User.insertMany(req.body,  (err, doc) =>{
-        if (err) return res.json(err);
+        if (err) return res.json({ error: err });
         res.json({
             message: 'users saved',
             status: 200,
-            usersSaved: doc
+            data: doc,
+            error: null
         });
     });
 });
@@ -68,11 +74,12 @@ router.post('/many', [isAuthenticate, isAdmin], (req, res) => {
 router.get('/:id', isAuthenticate, (req, res) => {
     const id = req.params.id;
     User.findById(id, { password: 0 }, (err, doc) => {
-        if (err) return res.json(err);
+        if (err) return res.json({ error: err });
         res.json({
             message: "user trouvé par id",
             status: 200,
-            userFetched: doc
+            data: doc,
+            error: null
         });
     });
 });
@@ -82,18 +89,21 @@ router.put('/:id', isAuthenticate, (req, res) => {
     if (id === req.decoded.userId) {
         const user = createUser(req);
         User.findByIdAndUpdate(id, user, (err, doc) => {
-            if (err) return res.json(err);
+            if (err) return res.json({ error: err });
             res.json({
                 message: "user modifié",
-                user: doc,
-                status: 200
+                data: doc,
+                status: 200,
+                error: null
             });
         });
     }
     if (id !== req.decoded.userId) {
         res.json({
             message: "Pas les droits de modification pour cet utilisateur",
-            status: 401
+            status: 401,
+            data: null,
+            error: null
         })
     }
 });

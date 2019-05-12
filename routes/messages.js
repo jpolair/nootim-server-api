@@ -15,25 +15,15 @@ createMessage = (req) => {
 router.post('/', (req, res) => {
     const message = createMessage(req);
     message.save((err, doc) => {
-        if (err) return res.json(err);
+        if (err) return res.json({ error: err });
         res.json({
             message: "Message sauvegardé",
             status: 200,
-            messageSaved: doc
+            data: doc,
+            error: null
         });
     });
 });
-
-// router.get('/', isAuthenticate, (req, res) => {
-//     Message.find({ clubId: { $in: req.decoded.clubId } }, function (err, doc) {
-//         if (err) return res.json({ err });
-//         res.json({
-//             status: 200,
-//             message: 'Liste des messages trouvée',
-//             messagesFetched: doc
-//         });
-//     });
-// });
 
 router.get('/', isAuthenticate, (req, res) => {
     Message.find({ clubId: { $in: req.decoded.clubId } })
@@ -43,12 +33,13 @@ router.get('/', isAuthenticate, (req, res) => {
         res.json({
             status: 200,
             message: 'Liste des messages trouvée',
-            messagesFetched: doc
+            data: doc,
+            error: null
         });
     })
     .catch( (err) => {
-        res.json({err})
-    })
+        res.json({ error: err });
+    });
 });
 
 router.get('/my', isAuthenticate, (req, res) => {
@@ -56,12 +47,15 @@ router.get('/my', isAuthenticate, (req, res) => {
         .find({owner: req.decoded.userId})
         .populate('user')
         .exec((err, doc) => {
-            if (err) return res.json(err);
             res.json({
                 status: 200,
                 message: "messages du user trouvés",
-                messagesFetched: doc
+                data: doc,
+                error: null
             });
+        })
+        .catch( (err) => {
+            res.json({ error: err });
         });
 });
 

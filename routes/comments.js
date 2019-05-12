@@ -16,22 +16,25 @@ createComment = (req) => {
 router.post('/', isAuthenticate, (req, res) => {
     const comment = createComment(req);
     comment.save((err, doc) => {
-        if (err) return res.json(err);
+        if (err) return res.json({ error:err });
         res.json({
             message: "Comment sauvegardé",
             status: 200,
-            commentSaved: doc
+            data: doc,
+            error: null
         });
     });
 });
 
 router.get('/', isAuthenticate, (req, res) => {
     Comment.find({ clubId: { $in: req.decoded.clubId } }, function (err, doc) {
-        if (err) return res.json({ err });
+        if (err) return res.json({ error: err });
         res.json({ 
             status: 200, 
             message: 'Liste des comments trouvée', 
-            commentsFetched: doc });
+            data: doc,
+            error: null 
+        });
     });
 });
 
@@ -41,11 +44,12 @@ router.get('/messages/:id', isAuthenticate, (req, res) => {
     .populate('ownerMessage', 'firstname lastname')
     .populate('ownerComment', 'firstname lastname')
     .exec( (err, doc) => {
-        if (err) return res.json({ err });
+        if (err) return res.json({ error: err });
         res.json({
             status: 200,
             message: 'Liste des comments trouvée',
-            commentsFetched: doc
+            data: doc,
+            error: null
         });
     });
 

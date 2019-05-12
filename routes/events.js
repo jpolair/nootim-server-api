@@ -17,11 +17,12 @@ function createEvent(req) {
 router.post('/', [isAuthenticate, isAdmin], (req, res) => {
     const event = createEvent(req);
     event.save((err, doc) => {
-        if (err) return res.json(err);
+        if (err) return res.json({ error: err });
         res.json({
             message: "event save",
             status: 200,
-            eventSaved: doc
+            data: doc,
+            error: null
         });
     })
 });
@@ -29,32 +30,38 @@ router.post('/', [isAuthenticate, isAdmin], (req, res) => {
 router.put('/:id', [isAuthenticate, isAdmin], (req, res) => {
     const event = createEvent(req);
     Event.findByIdAndUpdate(id, event, (err, doc) => {
-        if (err) return res.json(err);
+        if (err) return res.json({ error: err });
         res.json({
             message: "event modifié avec succès",
-            eventUpdated: doc
+            data: doc,
+            status: 200,
+            error: null
         });
     });
 });
 
 router.get('/', isAuthenticate, (req, res) => {
     Event.find({ clubId: { $in: req.decoded.clubId } }, function (err, doc) {
-        if (err) return res.json({ err });
+        if (err) return res.json({ error: err });
         res.json({ 
             status: 200, 
             message: 'Liste des events trouvée', 
-            eventsFetched: doc });
+            data: doc,
+            error: null 
+        });
     });
 });
 
 router.get('/:id', isAuthenticate, (req, res) => {
     const id = req.params.id;
     Event.find({ _id: id, clubId: { $in: req.decoded.clubId } }, function (err, doc) {
-        if (err) return res.json({ err });
+        if (err) return res.json({ error: err });
         res.json({ 
             status: 200, 
             message: 'Liste des events trouvée', 
-            eventFetched: doc });
+            data: doc,
+            error: null 
+        });
     });
 });
 
