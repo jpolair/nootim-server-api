@@ -18,6 +18,7 @@ const clubs = require('./routes/clubs');
 const messages = require('./routes/messages');
 const payments = require('./routes/payments');
 const comments = require('./routes/comments');
+const hearts = require('./routes/hearts');
 
 app.use(cors());
 
@@ -30,6 +31,7 @@ app.use('/api/events', events);
 app.use('/api/messages', messages);
 app.use('/api/payments', payments);
 app.use('/api/comments', comments);
+app.use('/api/hearts', hearts);
 
 app.get('', (req, res) => {
     res.json({ message: 'Ici viendra ma SPA....'});
@@ -46,6 +48,10 @@ io.on('connection', (socket) =>  {
     socket.on('messageCreated', (data) => {
         console.log('message create ', data);
         io.sockets.emit('messageCreated', data);
+    });
+    socket.on('messageUpdated', (data) => {
+        console.log('message updated ', data);
+        io.sockets.emit('messageUpdated', data);
     });
     socket.on('userCreate', (data) => {
         console.log('user create ', data);
