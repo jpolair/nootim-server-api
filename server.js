@@ -5,7 +5,7 @@ const cors = require('cors');
 const socket = require('socket.io');
 
 const app = express();
-const MONGODB_URL = process.env.MONGODB_URL || 'mongodb://localhost:27017/nootim';
+const MONGODB_URL = process.env.MONGODB_URI || 'mongodb://localhost:27017/nootim';
 const PORT = process.env.PORT || 3000;
 
 mongoose.connect(MONGODB_URL, { useCreateIndex: true, useNewUrlParser: true });
